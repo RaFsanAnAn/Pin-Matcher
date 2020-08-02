@@ -1,63 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pin Generator</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="container">
         <div class="row">
             <div class="col-md-6">
                 <div class="pin-generator half-width">
-                    <input class="form-control" type="text">
-                    <button class="generate-btn">Generate Pin</button>
+                    <input id="generatedPin" class="form-control" type="text" placeholder="Generate Pin">
+                    <button onclick="generatePin()" class="generate-btn">Generate Pin</button>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="input-section half-width">
-                    <input class="form-control" type="text">
+                    <input id="givenPin" class="form-control" type="text" placeholder="Input Your Pin">
                     <div class="numbers">
                         <div class="calc-body">
                             <div class="calc-button-row">
-                              <div class="button">7</div>
-                              <div class="button">8</div>
-                              <div class="button">9</div>
+                                <div class="button" onclick="giveInput(7)">7</div>
+                                <div class="button" onclick="giveInput(8)">8</div>
+                                <div class="button" onclick="giveInput(9)">9</div>
                             </div>
                             <div class="calc-button-row">
-                              <div class="button">4</div>
-                              <div class="button">5</div>
-                              <div class="button">6</div>
+                                <div class="button" onclick="giveInput(4)">4</div>
+                                <div class="button" onclick="giveInput(5)">5</div>
+                                <div class="button" onclick="giveInput(6)">6</div>
                             </div>
                             <div class="calc-button-row">
-                              <div class="button">1</div>
-                              <div class="button">2</div>
-                              <div class="button">3</div>
+                                <div class="button" onclick="giveInput(1)">1</div>
+                                <div class="button" onclick="giveInput(2)">2</div>
+                                <div class="button" onclick="giveInput(3)">3</div>
                             </div>
                             <div class="calc-button-row">
-                                <div class="button"><</div>
-                                <div class="button">0</div>
-                                <div class="button">C</div>
+                                <div class="button" onclick="givenPin.value = givenPin.value.slice(0, -1)"><</div>
+                                        <div class="button" onclick="giveInput(0)">0</div>
+                                        <div class="button" onclick="givenPin.value = ''">C</div>
+                                </div>
+                                <div>
+                                    <button onclick="matchPin()" id="submitButton" type="submit"
+                                        class="submit-btn">Submit</button>
+                                    <p class="action-left"><span id="tryLeft">3</span> try left</p>
+                                </div>
                             </div>
-                            <div>
-                                <button type="submit" class="submit-btn">Submit</button>
-                                <p class="action-left">3 try left</p>
-                            </div>
+                        </div>
                     </div>
                 </div>
+                <div class="notify-section">
+                    <p class="notify" id="pinNotMatch">❌ Pin Didn't Match, Please try again</p>
+                    <p class="notify" id="pinMatch">✅ Pin Matched... Secret door is opening for you</p>
+                </div>
             </div>
-        </div>
-        <div class="notify-section">
-            <p class="notify">❌ Pin Didn't Match, Please try again</p>
-            <p class="notify">✅ Pin Matched... Secret door is opening for you</p>
-        </div>
-    </div>
 
-    <script>
+            <script>
+                //Hiding two pin alerts in lower section
+                document.getElementById("pinNotMatch").style.display = 'none';
+                document.getElementById("pinMatch").style.display = 'none';
 
-    </script>
-    
+                //Function for generating a random number for Pin
+                function generatePin() {
+                    const randomNumber = Math.floor(1000 + Math.random() * 9000);
+                    document.getElementById("generatedPin").value = randomNumber;
+                    document.getElementById("pinNotMatch").style.display = 'none';
+                    document.getElementById("pinMatch").style.display = 'none';
+                    document.getElementById('submitButton').style.display = 'inline';
+                    document.getElementById("tryLeft").innerText = 3;
+                }
+
+                //Function for giving user input for every digit
+                function giveInput(num) {
+                    const input = document.getElementById("givenPin").value;
+                    const newInput = input + num;
+                    document.getElementById("givenPin").value = newInput;
+                }
+
+                //Function for matching generated random pin & user given pin
+                function matchPin() {
+                    const getGeneratedCode = document.getElementById("generatedPin").value
+                    const getGivenCode = document.getElementById("givenPin").value
+                    if (getGeneratedCode == getGivenCode) {
+                        document.getElementById("pinMatch").style.display = 'block';
+                        document.getElementById("pinNotMatch").style.display = 'none';
+                    }
+                    else if (getGeneratedCode == '' || getGivenCode == '') {
+                        alert('Error! Input Pin is empty ! Give your Pin.');
+                    }
+                    else {
+                        document.getElementById("pinNotMatch").style.display = 'block';
+                        document.getElementById("pinMatch").style.display = 'none';
+                        tryRemain();
+                    }
+                }
+
+                //Function for 3 try left option
+                function tryRemain() {
+                    const tryLeftValue = document.getElementById("tryLeft").innerText;
+                    const newTryLeftValue = parseFloat(tryLeftValue);
+                    const tryRemaining = newTryLeftValue - 1;
+                    document.getElementById("tryLeft").innerText = tryRemaining;
+                    if (tryRemaining == 0) {
+                        document.getElementById('submitButton').style.display = 'none';
+                    }
+                }
+            </script>
 </body>
+
 </html>
